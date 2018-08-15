@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <!--<link rel="stylesheet" type="text/css" href="css/style.css">-->
+    <style>
+        /**
+ * Created by Dean on 2018/3/5.
+ */
+        html,body{height:100%;margin:0;}
+        body{background: #092756;display:flex;flex-direction: column;justify-content: center;align-items:center;
+            background: -moz-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%),-moz-linear-gradient(top, rgba(57,173,219,.25) 0%, rgba(42,60,87,.4) 100%), -moz-linear-gradient(-45deg, #670d10 0%, #092756 100%);
+            background: -webkit-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -webkit-linear-gradient(top, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), -webkit-linear-gradient(-45deg, #670d10 0%,#092756 100%);
+            background: -o-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -o-linear-gradient(top, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), -o-linear-gradient(-45deg, #670d10 0%,#092756 100%);
+            background: -ms-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -ms-linear-gradient(top, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), -ms-linear-gradient(-45deg, #670d10 0%,#092756 100%);
+            background: -webkit-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), linear-gradient(to bottom, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), linear-gradient(135deg, #670d10 0%,#092756 100%)}
+        .head{display:flex;justify-content: center;}
+        .scroebox,.manubox,.mainbox{position:relative;color:lightyellow;overflow: hidden;
+            -webkit-box-shadow:  0 0 2px white;-moz-box-shadow:  0 0 2px white;box-shadow:  0 0 2px white;
+            -webkit-border-radius:15px;-moz-border-radius:15px;border-radius:15px;}
+        .scroebox{line-height:14px;text-align: center;font-size:12px;margin:20px 10px;}
+        .score{font-size:30px;line-height:30px;height:30px;color:tan;padding-bottom:10px}
+        .fadescore{position:absolute;left:0;right:0;top:50%;text-align: center;font-size:20px;color:gold;}
+        .manubox{margin-top:20px;auto;padding:0 10px;font-size:12px;color:darkgray;}
+        .mainbox{width:90%;max-width:480px;max-height:480px;}
+        .cell,.cellbg{width:20%;height:20%;color:palegoldenrod;
+            -webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;
+            -webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;}
+        .cellbg{float:left;margin:2.085%;border:1px dashed white;position:relative;background:#ddd;opacity: .025;width:20.835%;height:20.835%;}
+        .cell{position:absolute;text-align: center;font-size:30px;font-weight:bolder;text-shadow: 0 0 3px white;overflow:hidden;
+            -webkit-box-shadow: inset 0 0 2px white;-moz-box-shadow: inset 0 0 2px white;box-shadow: inset 0 0 2px white;
+            -webkit-transform: scale(0);-moz-transform: scale(0);-ms-transform: scale(0);-o-transform: scale(0);transform: scale(0);
+            -webkit-transition: .3s;-moz-transition: .3s;-ms-transition: .3s;-o-transition: .3s;transition: .3s;}
+        .mainbox:before,.cell:before,.cell:after,.scroebox:before,.manubox:before,.newGame:before{
+            position:absolute;content:"";background:white;top:0;bottom:0;left:0;right:0;opacity: .05;z-index: -1}
+        .cell:after{opacity: .05;left:-30%;right:60%;top:-50%;bottom:-37%;
+            -webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);-ms-transform: rotate(45deg);-o-transform: rotate(45deg);transform: rotate(45deg);}
+        .row1{top:4%;}
+        .row2{top:28%;}
+        .row3{top:52%;}
+        .row4{top:76%;}
+        .col1{left:4%;}
+        .col2{left:28%;}
+        .col3{left:52%;}
+        .col4{left:76%;}
+        .step{-webkit-transform: scale(1);-moz-transform: scale(1);-ms-transform: scale(1);-o-transform: scale(1);transform: scale(1);}
+        .tt{font-size:14px;}
+        .newGame{color:lightblue;cursor:pointer;float:right;font-size:14px;padding:4px 15px;border:1px solid lightslategray;position:absolute;overflow: hidden;right:5px;top:5px;
+            -webkit-border-radius:20px;-moz-border-radius:20px;border-radius:20px;}
+        .newGame,.newGame:before{-webkit-transition: .3s;-moz-transition: .3s;-ms-transition: .3s;-o-transition: .3s;transition: .3s;}
+        .newGame:hover{color:aqua;}
+        .newGame:hover:before{opacity: .1}
+        @-webkit-keyframes scoreadd0 {
+            from {opacity: 1;}to {opacity: 0;-webkit-transform: translate(-45px,-100%); transform: translate(-45px,-100%);}
+        }
+        @keyframes scoreadd0 {
+            from {opacity: 1;}to { opacity: 0;-webkit-transform: translate(-45px,-100%); transform: translate(-45px,-100%); }
+        }
+
+        @-webkit-keyframes scoreadd1 {
+            from {opacity: 1;}to {opacity: 0;-webkit-transform: translate(-35px,-100%); transform: translate(-35px,-100%);}
+        }
+        @keyframes scoreadd1 {
+            from {opacity: 1;}to { opacity: 0;-webkit-transform: translate(-35px,-100%); transform: translate(-35px,-100%); }
+        }
+
+        @-webkit-keyframes scoreadd2 {
+            from {opacity: 1;}to {opacity: 0;-webkit-transform: translate(-25px,-100%); transform: translate(-25px,-100%);}
+        }
+        @keyframes scoreadd2 {
+            from {opacity: 1;}to { opacity: 0;-webkit-transform: translate(-25px,-100%); transform: translate(-25px,-100%); }
+        }
+
+        @-webkit-keyframes scoreadd3 {
+            from {opacity: 1;}to {opacity: 0;-webkit-transform: translate(-15px,-100%); transform: translate(-15px,-100%);}
+        }
+        @keyframes scoreadd3 {
+            from {opacity: 1;}to { opacity: 0;-webkit-transform: translate(-15px,-100%); transform: translate(-15px,-100%); }
+        }
+
+        @-webkit-keyframes scoreadd4 {
+            from {opacity: 1;}to {opacity: 0;-webkit-transform: translate(-5px,-100%); transform: translate(-5px,-100%);}
+        }
+        @keyframes scoreadd4 {
+            from {opacity: 1;}to { opacity: 0;-webkit-transform: translate(-5px,-100%); transform: translate(-5px,-100%); }
+        }
+
+        @-webkit-keyframes scoreadd5 {
+            from {opacity: 1;}to {opacity: 0;-webkit-transform: translate(5,-100%); transform: translate(5,-100%);}
+        }
+        @keyframes scoreadd5 {
+            from {opacity: 1;}to { opacity: 0;-webkit-transform: translate(5,-100%); transform: translate(5,-100%); }
+        }
+
+        @-webkit-keyframes scoreadd6 {
+            from {opacity: 1;}to {opacity: 0;-webkit-transform: translate(15px,-100%); transform: translate(15px,-100%);}
+        }
+        @keyframes scoreadd6 {
+            from {opacity: 1;}to { opacity: 0;-webkit-transform: translate(15px,-100%); transform: translate(15px,-100%); }
+        }
+
+        @-webkit-keyframes scoreadd7 {
+            from {opacity: 1;}to {opacity: 0;-webkit-transform: translate(25px,-100%); transform: translate(25px,-100%);}
+        }
+        @keyframes scoreadd7 {
+            from {opacity: 1;}to { opacity: 0;-webkit-transform: translate(25px,-100%); transform: translate(25px,-100%); }
+        }
+
+        @-webkit-keyframes scoreadd8 {
+            from {opacity: 1;}to {opacity: 0;-webkit-transform: translate(35px,-100%); transform: translate(35px,-100%);}
+        }
+        @keyframes scoreadd8 {
+            from {opacity: 1;}to { opacity: 0;-webkit-transform: translate(35px,-100%); transform: translate(35px,-100%); }
+        }
+
+        @-webkit-keyframes scoreadd9 {
+            from {opacity: 1;}to {opacity: 0;-webkit-transform: translate(45px,-100%); transform: translate(45px,-100%);}
+        }
+        @keyframes scoreadd9 {
+            from {opacity: 1;}to { opacity: 0;-webkit-transform: translate(45px,-100%); transform: translate(45px,-100%); }
+        }
+
+        .scoreadd0 {-webkit-animation-duration: 1s; animation-duration: 1s;-webkit-animation-fill-mode: both;animation-fill-mode: both;-webkit-animation-name: scoreadd0;animation-name: scoreadd0;}
+        .scoreadd1 {-webkit-animation-duration: 1s; animation-duration: 1s;-webkit-animation-fill-mode: both;animation-fill-mode: both;-webkit-animation-name: scoreadd1;animation-name: scoreadd1;}
+        .scoreadd2 {-webkit-animation-duration: 1s; animation-duration: 1s;-webkit-animation-fill-mode: both;animation-fill-mode: both;-webkit-animation-name: scoreadd2;animation-name: scoreadd2;}
+        .scoreadd3 {-webkit-animation-duration: 1s; animation-duration: 1s;-webkit-animation-fill-mode: both;animation-fill-mode: both;-webkit-animation-name: scoreadd3;animation-name: scoreadd3;}
+        .scoreadd4 {-webkit-animation-duration: 1s; animation-duration: 1s;-webkit-animation-fill-mode: both;animation-fill-mode: both;-webkit-animation-name: scoreadd4;animation-name: scoreadd4;}
+        .scoreadd5 {-webkit-animation-duration: 1s; animation-duration: 1s;-webkit-animation-fill-mode: both;animation-fill-mode: both;-webkit-animation-name: scoreadd5;animation-name: scoreadd5;}
+        .scoreadd6 {-webkit-animation-duration: 1s; animation-duration: 1s;-webkit-animation-fill-mode: both;animation-fill-mode: both;-webkit-animation-name: scoreadd6;animation-name: scoreadd6;}
+        .scoreadd7 {-webkit-animation-duration: 1s; animation-duration: 1s;-webkit-animation-fill-mode: both;animation-fill-mode: both;-webkit-animation-name: scoreadd7;animation-name: scoreadd7;}
+        .scoreadd8 {-webkit-animation-duration: 1s; animation-duration: 1s;-webkit-animation-fill-mode: both;animation-fill-mode: both;-webkit-animation-name: scoreadd8;animation-name: scoreadd8;}
+        .scoreadd9 {-webkit-animation-duration: 1s; animation-duration: 1s;-webkit-animation-fill-mode: both;animation-fill-mode: both;-webkit-animation-name: scoreadd9;animation-name: scoreadd9;}
+    </style>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+
+    <title>2048</title>
+</head>
+<body>
+<div class="head">
+    <div class="scroebox">
+        <p>当前积分</p>
+        <div class="score score1">0</div>
+        <div class="markdel1"></div>
+    </div>
+    <div class="scroebox">
+        <p>最高积分</p>
+        <div class="score score2">0</div>
+        <div class="markdel2"></div>
+    </div>
+</div>
+
+<div class="mainbox" id="slider">
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cellbg"></div>
+    <div class="cell row1 col1 left up"></div>
+    <div class="cell row1 col2 up"></div>
+    <div class="cell row1 col3 up"></div>
+    <div class="cell row1 col4 up right"></div>
+    <div class="cell row2 col1 left"></div>
+    <div class="cell row2 col2 center"></div>
+    <div class="cell row2 col3 center"></div>
+    <div class="cell row2 col4 right"></div>
+    <div class="cell row3 col1 left"></div>
+    <div class="cell row3 col2 center"></div>
+    <div class="cell row3 col3 center"></div>
+    <div class="cell row3 col4 right"></div>
+    <div class="cell row4 col1 left down"></div>
+    <div class="cell row4 col2 down"></div>
+    <div class="cell row4 col3 down"></div>
+    <div class="cell row4 col4 right down"></div>
+</div>
+<div class="manubox">
+    <p><span class="tt">2048怎么玩？</span><br><br>
+        电脑：方向键移动;手机：手指滑动屏幕。<br>
+        得到一个“2048”就算胜利了,如果16个格子全部填满并且无法移动的话，那么gameover。</p>
+    <b class="newGame">重新开始</b></div>
+
+<script>
+    /**
+     * Created by Dean on 2018/3/5.
+     */
+    $(function(){
+        /*初始化*/
+        $(document).ready(function(){
+            defaultSet();
+            init();
+        });
+
+        // 给2048游戏板自适应高度
+        $(window).resize(function() {
+            defaultSet();
+        });
+        function defaultSet(){
+            var mbw = $('.mainbox').width();       //并不是重要属性，偷懒用,哈哈
+            $('.mainbox').height(mbw).css({"padding":(mbw/48)+"px"});/*,"margin":(-mbw/1.92)+"px 0 0 "+(-mbw/1.92)+"px"*/
+            $('.scroebox').css({"width":(mbw/2.5)+"px"});
+            $('.manubox').width(mbw*.9);
+            // $('.scroebox1').css({"margin-left:":-(mbw/48)+"px"});
+            $('.cell').css({"line-height":+$('.cell').height()+"px"});
+        }
+
+        //随机数字和随机块位置
+        var randomNum,randomPos;
+        var left ="left";                           //并不是重要属性，偷懒用,哈哈
+        var up ="up";                               //并不是重要属性，偷懒用,哈哈
+        var right ="right";                         //并不是重要属性，偷懒用,哈哈
+        var down ="down";                           //并不是重要属性，偷懒用,哈哈
+
+        //新游戏初始设置
+        function init(){
+            $('.cell').html('').removeClass('step');
+            $('.score1').html('0');
+            getRP();
+            getRP();
+            getClass();
+        }
+        $('.newGame').click(function(){init()});
+
+        //随机生成2或者4在16格之一
+        function getRP(direction){
+            randomNum=Math.random()<0.67?2:4;
+            randomPos=$('.cell').eq(parseInt((Math.random()*100)/6.25));
+            if(randomPos.html()!=""){
+                return getRP(direction);
+            }else{
+                randomPos.html(randomNum);
+            }
+        }
+
+        //随机生成1个或2个数字
+        function refreshPR(){
+            if(checkGame()){
+                alert('game over');
+                return
+            }else{
+                setTimeout(function(){
+                    if(Math.random()>.67){
+                        getRP();
+                        setTimeout(function(){getRP()},5)
+                    }else{
+                        getRP()
+                    }
+                    getClass();
+                },50)
+            }
+        }
+
+        //更新样式
+        function getClass(){
+            setTimeout(function(){
+                for(var i=0;i<16;i++){
+                    if($('.cell').eq(i).html() >0){
+                        $('.cell').eq(i).addClass('step')
+                    }
+                }
+            },10)
+        }
+
+        //滑动处理
+        var mybody = $('.mainbox').get(0);
+        var startX, startY, moveEndX, moveEndY, X, Y, isScrolling;
+        mybody.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            startX = e.touches[0].pageX;
+            startY = e.touches[0].pageY;
+        });
+        mybody.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            moveEndX = e.changedTouches[0].pageX;
+            moveEndY = e.changedTouches[0].pageY;
+            X = moveEndX - startX;
+            Y = moveEndY - startY;
+            isScrolling = Math.abs(X) < Math.abs(Y) ? 1:0;    //isScrolling为1时，表示纵向滑动，0为横向滑动
+            if ( isScrolling < 1 && X < 0 ) {
+                cellsMove(left);
+            }else if ( isScrolling > 0 && Y < 0 ) {
+                cellsMove(up);
+            }else if ( isScrolling < 1 && X > 0 ) {
+                cellsMove(right);
+            }else if ( isScrolling > 0 && Y > 0) {
+                cellsMove(down);
+            }
+        });
+
+        //判断键盘方向事件
+        $(document).keydown(function (event){
+            if(event.keyCode == 37){
+                cellsMove(left);
+            }else if(event.keyCode == 38){
+                cellsMove(up);
+            }else if(event.keyCode == 39){
+                cellsMove(right);
+            }else if(event.keyCode == 40){
+                cellsMove(down);
+            }
+        });
+
+        //统一移动结果动画
+        function animateCells(fromtemp,temp,tmin,tadd,val){
+            //fromtemp 移动开始块索引
+            //temp 移动替换块索引
+            //tmin，tadd 替换的样式
+            //val 判断是否叠加和具体叠加值
+            $('.mainbox>div').eq(fromtemp).removeClass(tadd).addClass(tmin);
+            $('.mainbox>div').eq(temp).removeClass(tmin).addClass(tadd);
+            if(val>0){
+                $('.mainbox>div').eq(fromtemp).html(val*2);
+                $('.mainbox>div').eq(temp).hide();
+                setTimeout(function(){
+                    $('.mainbox>div').eq(temp).removeClass('step').html("").show();
+                },10);
+                $('.score1').html(-(-$('.score1').html()-val));
+                $('.score1').after("<div class='fadescore scoreadd"+parseInt(Math.random()*9.999)+"'>+"+val+"</div>");
+                if(-$('.score1').html()<-$('.score2').html()){
+                    $('.score2').html($('.score1').html()).after("<div class='fadescore scoreadd"+parseInt(Math.random()*9.999)+"'>+"+val+"</div>");
+                    setTimeout(function(){
+                        $('.markdel2').prev().remove();
+                    },1000)
+                }
+                setTimeout(function(){
+                    $('.markdel1').prev().remove();
+                },1000)
+
+            }
+        }
+
+        //移动循环。。。。这个部分最复杂了=.=
+        function cellsMove(direction){
+            var markNum = 0,fromtemp,temp,l;
+            //左移和上移都是从左上角开始循环
+            if(direction == left || direction == up){
+                for(var i=1;i<5;i++){
+                    markNum = 0;
+                    for(var j=1;j<5;j++){
+                        l=j+1;
+                        //左移具体循环判断
+                        if(direction == left){
+                            if($('.row'+i+'.col'+j).html()==""){
+                                for(var k=j+1;k<5;k++){
+                                    if($('.row'+i+'.col'+k).html()!=""){
+                                        l=j-1;
+                                        if(markNum == $('.row'+i+'.col'+k).html()){
+                                            fromtemp = $('.row'+i+'.col'+k).index();
+                                            temp = $('.row'+i+'.col'+l).index();
+                                            animateCells(fromtemp,temp,'col'+l,'col'+k,markNum);
+                                            markNum = 0;
+                                        }else{
+                                            markNum = $('.row'+i+'.col'+k).html();
+                                            fromtemp = $('.row'+i+'.col'+k).index();
+                                            temp = $('.row'+i+'.col'+j).index();
+                                            animateCells(fromtemp,temp,'col'+j,'col'+k,0);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }else if($('.row'+i+'.col'+j).html() == $('.row'+i+'.col'+l).html()){
+                                markNum = $('.row'+i+'.col'+j).html();
+                                fromtemp = $('.row'+i+'.col'+l).index();
+                                temp = $('.row'+i+'.col'+j).index();
+                                animateCells(fromtemp,temp,'col'+j,'col'+l,markNum);
+                                markNum = 0;
+                            }else{
+                                markNum = $('.row'+i+'.col'+j).html();
+                            }
+                        }
+                        //上移具体循环判断
+                        else{
+                            if($('.row'+j+'.col'+i).html()==""){
+                                for(var k=j+1;k<5;k++){
+                                    if($('.row'+k+'.col'+i).html()!=""){
+                                        l=j-1;
+                                        if(markNum == $('.row'+k+'.col'+i).html()){
+                                            fromtemp = $('.row'+k+'.col'+i).index();
+                                            temp = $('.row'+l+'.col'+i).index();
+                                            animateCells(fromtemp,temp,'row'+l,'row'+k,markNum);
+                                            markNum = 0;
+                                        }else{
+                                            markNum = $('.row'+k+'.col'+i).html();
+                                            fromtemp = $('.row'+k+'.col'+i).index();
+                                            temp = $('.row'+j+'.col'+i).index();
+                                            animateCells(fromtemp,temp,'row'+j,'row'+k,0);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }else if($('.row'+j+'.col'+i).html() == $('.row'+l+'.col'+i).html()){
+                                markNum = $('.row'+j+'.col'+i).html();
+                                fromtemp = $('.row'+l+'.col'+i).index();
+                                temp = $('.row'+j+'.col'+i).index();
+                                animateCells(fromtemp,temp,'row'+j,'row'+l,markNum);
+                                markNum = 0;
+                            }else{
+                                markNum = $('.row'+j+'.col'+i).html();
+                            }
+                        }
+                    }
+                }
+
+            }
+            //右移和下移都是从右下角开始循环
+            else{
+                for(var i=4;i>0;i--){
+                    markNum = 0;
+                    for(var j=4;j>0;j--){
+                        l=j-1;
+                        //具体右移循环判断
+                        if(direction == right){
+                            if($('.row'+i+'.col'+j).html()==""){
+                                for(var k=j-1;k>0;k--){
+                                    if($('.row'+i+'.col'+k).html()!=""){
+                                        l=j+1;
+                                        if(markNum == $('.row'+i+'.col'+k).html()){
+                                            fromtemp = $('.row'+i+'.col'+k).index();
+                                            temp = $('.row'+i+'.col'+l).index();
+                                            animateCells(fromtemp,temp,'col'+l,'col'+k,markNum);
+                                            markNum = 0;
+                                        }else{
+                                            markNum = $('.row'+i+'.col'+k).html();
+                                            fromtemp = $('.row'+i+'.col'+k).index();
+                                            temp = $('.row'+i+'.col'+j).index();
+                                            animateCells(fromtemp,temp,'col'+j,'col'+k,0);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }else if($('.row'+i+'.col'+j).html() == $('.row'+i+'.col'+l).html()){
+                                markNum = $('.row'+i+'.col'+j).html();
+                                fromtemp = $('.row'+i+'.col'+l).index();
+                                temp = $('.row'+i+'.col'+j).index();
+                                animateCells(fromtemp,temp,'col'+j,'col'+l,markNum);
+                                markNum = 0;
+                            }else{
+                                markNum = $('.row'+i+'.col'+j).html();
+                            }
+                        }
+                        //具体下移循环判断
+                        else{
+                            if($('.row'+j+'.col'+i).html()==""){
+                                for(var k=j-1;k>0;k--){
+                                    if($('.row'+k+'.col'+i).html()!=""){
+                                        l=j+1;
+                                        if(markNum == $('.row'+k+'.col'+i).html()){
+                                            fromtemp = $('.row'+k+'.col'+i).index();
+                                            temp = $('.row'+l+'.col'+i).index();
+                                            animateCells(fromtemp,temp,'row'+l,'row'+k,markNum);
+                                            markNum = 0;
+                                        }else{
+                                            markNum = $('.row'+k+'.col'+i).html();
+                                            fromtemp = $('.row'+k+'.col'+i).index();
+                                            temp = $('.row'+j+'.col'+i).index();
+                                            animateCells(fromtemp,temp,'row'+j,'row'+k,0);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }else if($('.row'+j+'.col'+i).html() == $('.row'+l+'.col'+i).html()){
+                                markNum = $('.row'+j+'.col'+i).html();
+                                fromtemp = $('.row'+l+'.col'+i).index();
+                                temp = $('.row'+j+'.col'+i).index();
+                                animateCells(fromtemp,temp,'row'+j,'row'+l,markNum);
+                                markNum = 0;
+                            }else{
+                                markNum = $('.row'+j+'.col'+i).html();
+                            }
+                        }
+                    }
+                }
+            }
+            setTimeout(function(){refreshPR()},50);
+        }
+
+        //检查是否gameover
+        function checkGame(){
+            for(var i=0;i<16;i++){
+                if($('.cell').eq(i).html()==""){
+                    return false
+                }
+            }
+            return true;
+            // return init();
+        }
+    });
+</script>
+
+</body>
+</html>
